@@ -2,6 +2,9 @@ package com.belenot.mirea.schedule.service;
 
 import java.io.Closeable;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,13 +24,20 @@ import com.belenot.mirea.schedule.domain.Teacher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ScheduleService implements Closeable {
+public class ScheduleService implements Closeable, ApplicationListener<ContextRefreshedEvent> {
 
     private Logger logger = LogManager.getLogger(this);
+    private Date schedulesUpdatedDate;
+    private Date updateSchedulesDate;
+    private int schedulesUpdateDateInterval;
+    private boolean initialized = false;
+    private Map<String, Boolean> schedulesUpdateStatus = new HashMap<>();
     
     @Autowired
     private ScheduleDao scheduleDao;
@@ -36,6 +46,26 @@ public class ScheduleService implements Closeable {
     private Environment env;
     @Autowired
     private ScheduleParser parser;
+
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+	if (schedulesUpdatedDate == null || updateSchedulesDate.before(new Date())) {
+	    schedulesUpdatedDate = new GregorianCalendar().getTime();
+	    Calendar calendar = new GregorianCalendar();
+	    calendar.add(GregorianCalendar.DATE, schedulesUpdateDateInterval);
+	    updateSchedulesDate = calendar.getTime();
+	    schedulesUpdateStatus = saveAllSchedules();
+	}
+	
+    }
+
+    public boolean isInitialized() {
+	return initialized;
+    }
+
+    public Map<String, Boolean> getSchedulesUpdateStatus() {
+	return schedulesUpdateStatus;
+    }
 
     public List<String> getGroupNames() {
 	return parser.getGroupNames();
@@ -58,8 +88,6 @@ public class ScheduleService implements Closeable {
 	return saveResults;
     }
 
-    
-    //Refactor!
     public Schedule getSchedule(String groupName) {
 	Schedule schedule = scheduleDao.getByGroupName(groupName);
 	if (schedule == null) {
