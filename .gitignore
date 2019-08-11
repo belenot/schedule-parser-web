@@ -1,0 +1,6 @@
+/*
+*~
+/src/react/node_modules
+!/src
+!/pom.xml
+!/.gitignore

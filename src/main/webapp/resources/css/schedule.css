@@ -1,0 +1,42 @@
+h1 {
+    text-align: center;
+    margin-top: 2em;
+    font: 32pt Courier;
+    color: gray;
+}
+.schedule {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.day {
+    display: flex;
+    flex-direction: column;
+    
+    margin: 10px;
+    padding: 15px;
+    border: 5px solid darkgray;
+    border-radius: 7px;
+    box-shadow: 10px 10px 10px 5px black;
+    
+    background: linear-gradient(45deg, rgba(0,0,0,0.2), white);
+}
+
+.subject {
+    display: grid;
+    grid-template-columns: 0.2fr 2.8fr 1fr 1fr 1fr;
+    grid-column-gap: 1em;
+    grid-row-gap: 5px;
+    padding: 5px;
+    margin: 5px;
+    border: 1px solid gray;
+}
+.subject.header {
+    font-weight: bold;
+}
+
+.day .date {
+    font: 14pt Courier;
+    color: gray;
+    text-align: center;
+}
