@@ -67,13 +67,13 @@ public class ScheduleService implements Closeable, ApplicationListener<ContextRe
 	return schedulesUpdateStatus;
     }
 
-    public List<String> getGroupNames() {
-	return parser.getGroupNames();
+    public Map<Integer, String> getSchedulesGroups() {
+	return scheduleDao.getSchedulesGroups();
     }
-    //Temporary
+    
     public Map<String, Boolean> saveAllSchedules() {
 	Map<String, Boolean> saveResults = new HashMap<>();
-	for (String groupName : getGroupNames()) {
+	for (String groupName : parser.getGroupNames()) {
 	    try {
 		groupName = groupName.substring(0, 10);
 		Schedule schedule = parseSchedule(groupName);
@@ -88,6 +88,10 @@ public class ScheduleService implements Closeable, ApplicationListener<ContextRe
 	return saveResults;
     }
 
+    public Schedule getSchedule(int id) {
+        return scheduleDao.getFullLoaded(id);
+    }
+    
     public Schedule getSchedule(String groupName) {
 	Schedule schedule = scheduleDao.getByGroupName(groupName);
 	if (schedule == null) {

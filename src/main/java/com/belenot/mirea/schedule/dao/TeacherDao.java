@@ -41,4 +41,10 @@ public class TeacherDao {
 	Session session = sessionFactory.getCurrentSession();
 	return session.bySimpleNaturalId(Teacher.class).load(shortName);
     }
+
+    @Transactional
+    public List<Teacher> getTeachers() {
+	Session session = sessionFactory.getCurrentSession();
+	return session.createQuery("select t from Teacher t", Teacher.class).list();
+    }
 }

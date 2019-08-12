@@ -1,8 +1,9 @@
 package com.belenot.mirea.schedule.dao;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -18,6 +19,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Repository
 public class ScheduleDao {
@@ -106,6 +109,17 @@ public class ScheduleDao {
 	return schedules.size() > 0 ? schedules.get(0) : null;
     }
 
+    @Transactional
+    public Map<Integer, String> getSchedulesGroups() {
+	Session session = sessionFactory.getCurrentSession();
+	Map<Integer, String> groups = new HashMap<>();
+	List<Schedule> schedules = session.createQuery("select s from Schedule s", Schedule.class).list();
+	for (Schedule schedule : schedules) {
+	    groups.put(new Integer(schedule.getId()), schedule.getGroupName());
+	}
+	return groups;
+    }
+    
     @Transactional
     public Schedule getFullLoaded(int id) {
 	Session session = sessionFactory.getCurrentSession();

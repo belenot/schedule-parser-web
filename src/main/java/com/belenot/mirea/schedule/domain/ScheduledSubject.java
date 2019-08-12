@@ -10,20 +10,40 @@ import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.FilterDefs;
+import org.hibernate.annotations.Filters;
 import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.ParamDef;
 
 @Entity
+@FilterDefs({
+	@FilterDef( name = "classroomFilter", parameters = @ParamDef( name = "classroomsIds", type = "integer" ) ),
+	    @FilterDef( name = "subjectFilter", parameters = @ParamDef( name = "subjectsIds", type = "integer" ) ),
+	    @FilterDef( name = "teacherFilter", parameters = @ParamDef( name = "teachersIds", type = "integer" ) ),
+	    @FilterDef( name = "lessonTypeFilter", parameters = @ParamDef( name = "lessonTypes", type = "string" ) ),
+	    @FilterDef( name = "lessonTimeFilter", parameters = @ParamDef( name = "lessonTimes", type = "string" ) )
+	    })
+@Filters({
+	@Filter( name = "classroomFilter", condition = "classroom_id in (:classroomsIds)" ),
+	    @Filter( name = "subjectFilter", condition = "subject_id in (:subjectsIds)" ),
+	    @Filter( name = "teacherFilter", condition = "teacher_id in (:teachersIds)" ),
+	    @Filter( name = "lessonTypeFilter", condition = "lessonType in (:lessonTypes)" ),
+	    @Filter( name = "lessonTimeFilter", condition = "lessonTime in (:lessonTimes)" )
+	    })
 public class ScheduledSubject {
-
+    
     public enum LessonType {
 	LECTION, PRACTICE, LAB;
 	public static LessonType byString(String str) {
@@ -86,8 +106,10 @@ public class ScheduledSubject {
     @JsonIgnore
     private List<Schedule> schedules = new ArrayList<>();
     @NaturalId
+    @Enumerated( EnumType.STRING )
     private LessonType lessonType;
     @NaturalId
+    @Enumerated( EnumType.STRING )
     private LessonTime lessonTime;
     
     public int getId() {

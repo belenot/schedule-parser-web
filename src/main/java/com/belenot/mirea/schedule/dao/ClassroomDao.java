@@ -40,5 +40,11 @@ public class ClassroomDao {
 	Session session = sessionFactory.getCurrentSession();
 	return session.byNaturalId(Classroom.class).using("number", number).load();
     }
+
+    @Transactional
+    public List<Classroom> getClassrooms() {
+	Session session = sessionFactory.getCurrentSession();
+	return session.createQuery("select c from Classroom c", Classroom.class).list();
+    }
     
 }

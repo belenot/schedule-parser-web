@@ -41,4 +41,10 @@ public class SubjectDao {
 	Session session = sessionFactory.getCurrentSession();
 	return session.bySimpleNaturalId(Subject.class).load(title);
     }
+
+    @Transactional
+    public List<Subject> getSubjects() {
+	Session session = sessionFactory.getCurrentSession();
+	return session.createQuery("select s from Subject s", Subject.class).list();
+    }
 }

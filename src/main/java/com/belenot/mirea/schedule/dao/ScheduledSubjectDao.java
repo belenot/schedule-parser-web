@@ -1,12 +1,17 @@
 package com.belenot.mirea.schedule.dao;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.transaction.Transactional;
 
 import com.belenot.mirea.schedule.domain.Classroom;
 import com.belenot.mirea.schedule.domain.ScheduledSubject;
 import com.belenot.mirea.schedule.domain.Subject;
 import com.belenot.mirea.schedule.domain.Teacher;
+import com.belenot.mirea.schedule.support.ScheduledSubjectFilter;
 
+import org.hibernate.Filter;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +64,22 @@ public class ScheduledSubjectDao {
 	    .using("classroom", classroom).using("teacher", teacher)
 	    .using("lessonType", scheduledSubject.getLessonType())
 	    .using("lessonTime", scheduledSubject.getLessonTime()).load();
+    }
+
+    @Transactional
+    public List<ScheduledSubject> getByFilter(ScheduledSubjectFilter filter) {
+	Session session = sessionFactory.getCurrentSession();
+	if (filter.getTeachersIds().size() > 0)
+	    session.enableFilter("teacherFilter").setParameterList("teachersIds", filter.getTeachersIds().stream().map( v -> v.getValue()).collect(Collectors.toList()));
+	if (filter.getSubjectsIds().size() > 0)
+	    session.enableFilter("subjectFilter").setParameterList("subjectsIds", filter.getSubjectsIds().stream().map( v -> v.getValue()).collect(Collectors.toList()));
+	if (filter.getClassroomsIds().size() > 0)
+	    session.enableFilter("classroomFilter").setParameterList("classroomsIds", filter.getClassroomsIds().stream().map( v -> v.getValue()).collect(Collectors.toList()));
+	if (filter.getLessonTimes().size() > 0)
+	    session.enableFilter("lessonTimeFilter").setParameterList("lessonTimes", filter.getLessonTimes().stream().map( v -> v.getValue().name()).collect(Collectors.toList()));
+	if (filter.getLessonTypes().size() > 0)
+	    session.enableFilter("lessonTypeFilter").setParameterList("lessonTypes", filter.getLessonTypes().stream().map( v -> v.getValue().name()).collect(Collectors.toList()));
+	return session.createQuery("select ss from ScheduledSubject ss", ScheduledSubject.class).list();
     }
 
 }
