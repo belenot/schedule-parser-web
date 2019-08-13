@@ -1,6 +1,7 @@
 package com.belenot.mirea.schedule.support;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.belenot.mirea.schedule.domain.ScheduledSubject.LessonTime;
@@ -14,6 +15,8 @@ public class ScheduledSubjectFilter {
     private List<FilteringValue<Integer>> schedulesIds = new ArrayList<>();
     private List<FilteringValue<LessonTime>> lessonTimes = new ArrayList<>();
     private List<FilteringValue<LessonType>> lessonTypes = new ArrayList<>();
+    private List<FilteringValue<Integer>> studentGroupsIds = new ArrayList<>();
+    private List<FilteringValue<IntervalValue<Date>>> dateIntervals = new ArrayList<>();
 
     
     public void setTeachersIds(List<FilteringValue<Integer>> teachersIds) {
@@ -52,6 +55,19 @@ public class ScheduledSubjectFilter {
     public List<FilteringValue<Integer>> getSchedulesIds() {
 	return schedulesIds;
     }
+    public List<FilteringValue<Integer>> getStudentGroupsIds() {
+	return studentGroupsIds;
+    }
+    public void setStudentGroupsIds(List<FilteringValue<Integer>> studentGroupsIds) {
+	this.studentGroupsIds = studentGroupsIds;
+    }
+    public List<FilteringValue<IntervalValue<Date>>> getDateIntervals() {
+	return dateIntervals;
+    }
+    public void setDateIntervals(List<FilteringValue<IntervalValue<Date>>> dateIntervals) {
+	this.dateIntervals = dateIntervals;
+    }
+
     
     
 }

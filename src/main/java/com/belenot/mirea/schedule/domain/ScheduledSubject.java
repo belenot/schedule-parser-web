@@ -12,6 +12,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -24,24 +25,46 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.FilterDefs;
 import org.hibernate.annotations.Filters;
+import org.hibernate.annotations.NamedQuery;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.ParamDef;
 
 @Entity
+@NamedQuery( name = "ScheduledSubject_byStudentGroup",
+	     query = "select ss from ScheduledSubject ss inner join ss.studentGroups sg where sg.id in (:studentGroupsIds)"
+	     )
+//@SecondaryTable( name = "ScheduledSubject_StudentGroup",  )
 @FilterDefs({
 	@FilterDef( name = "classroomFilter", parameters = @ParamDef( name = "classroomsIds", type = "integer" ) ),
 	    @FilterDef( name = "subjectFilter", parameters = @ParamDef( name = "subjectsIds", type = "integer" ) ),
 	    @FilterDef( name = "teacherFilter", parameters = @ParamDef( name = "teachersIds", type = "integer" ) ),
 	    @FilterDef( name = "lessonTypeFilter", parameters = @ParamDef( name = "lessonTypes", type = "string" ) ),
-	    @FilterDef( name = "lessonTimeFilter", parameters = @ParamDef( name = "lessonTimes", type = "string" ) )
+	    @FilterDef( name = "lessonTimeFilter", parameters = @ParamDef( name = "lessonTimes", type = "string" ) ),
+	    @FilterDef( name = "dateFilter", parameters = { @ParamDef( name = "dateFirst", type = "date"), @ParamDef( name = "dateLast", type = "date") } ),
+
+	    @FilterDef( name = "notClassroomFilter", parameters = @ParamDef( name = "classroomsIds", type = "integer" ) ),
+	    @FilterDef( name = "notSubjectFilter", parameters = @ParamDef( name = "subjectsIds", type = "integer" ) ),
+	    @FilterDef( name = "notTeacherFilter", parameters = @ParamDef( name = "teachersIds", type = "integer" ) ),
+	    @FilterDef( name = "notLessonTypeFilter", parameters = @ParamDef( name = "lessonTypes", type = "string" ) ),
+	    @FilterDef( name = "notLessonTimeFilter", parameters = @ParamDef( name = "lessonTimes", type = "string" ) ),
+	    @FilterDef( name = "notDateFilter", parameters = { @ParamDef( name = "dateFirst", type = "date"), @ParamDef( name = "dateLast", type = "date") } )
 	    })
 @Filters({
 	@Filter( name = "classroomFilter", condition = "classroom_id in (:classroomsIds)" ),
 	    @Filter( name = "subjectFilter", condition = "subject_id in (:subjectsIds)" ),
 	    @Filter( name = "teacherFilter", condition = "teacher_id in (:teachersIds)" ),
 	    @Filter( name = "lessonTypeFilter", condition = "lessonType in (:lessonTypes)" ),
-	    @Filter( name = "lessonTimeFilter", condition = "lessonTime in (:lessonTimes)" )
+	    @Filter( name = "lessonTimeFilter", condition = "lessonTime in (:lessonTimes)" ),
+	    @Filter( name = "dateFilter", condition = "date between :dateFirst and :dateLast" ),
+	    
+	    @Filter( name = "notClassroomFilter", condition = "classroom_id not in (:classroomsIds)" ),
+	    @Filter( name = "notSubjectFilter", condition = "subject_id not in (:subjectsIds)" ),
+	    @Filter( name = "notTeacherFilter", condition = "teacher_id not in (:teachersIds)" ),
+	    @Filter( name = "notLessonTypeFilter", condition = "lessonType not in (:lessonTypes)" ),
+	    @Filter( name = "notLessonTimeFilter", condition = "lessonTime not in (:lessonTimes)" ),
+	    @Filter( name = "notDateFilter", condition = "date not between :dateFirst and :dateLast" )
 	    })
+	    		 
 public class ScheduledSubject {
     
     public enum LessonType {
@@ -102,9 +125,8 @@ public class ScheduledSubject {
     @ManyToOne( cascade = CascadeType.PERSIST )
     @NaturalId
     private Teacher teacher;
-    @ManyToMany
-    @JsonIgnore
-    private List<Schedule> schedules = new ArrayList<>();
+    @ManyToMany( fetch = FetchType.EAGER )
+    private List<StudentGroup> studentGroups = new ArrayList<>();
     @NaturalId
     @Enumerated( EnumType.STRING )
     private LessonType lessonType;
@@ -162,19 +184,19 @@ public class ScheduledSubject {
 	this.lessonTime = lessonTime;
 	return this;
     }
-    public List<Schedule> getSchedules() {
-	return schedules;
+    public List<StudentGroup> getStudentGroups() {
+	return studentGroups;
     }
-    public void setSchedules(List<Schedule> schedules) {
-	this.schedules = schedules;
+    public void setStudentGroups(List<StudentGroup> studentGroups) {
+	this.studentGroups = studentGroups;
     }
-    public void addSchedule(Schedule schedule) {
-	schedules.add(schedule);
-	schedule.getScheduledSubjects().add(this);
+    public void addStudentGroup(StudentGroup studentGroup) {
+        studentGroups.add(studentGroup);
+        studentGroup.getScheduledSubjects().add(this);
     }
-    public void removeSchedule(Schedule schedule) {
-	schedules.remove(schedule);
-	schedule.getScheduledSubjects().remove(this);
+    public void removeStudentGroup(StudentGroup studentGroup) {
+        studentGroups.remove(studentGroup);
+        studentGroup.getScheduledSubjects().remove(this);
     }
 
     @Override

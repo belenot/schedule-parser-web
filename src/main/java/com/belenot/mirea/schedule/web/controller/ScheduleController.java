@@ -4,9 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.belenot.mirea.schedule.dao.ScheduledSubjectDao;
+import com.belenot.mirea.schedule.dao.StudentGroupDao;
 import com.belenot.mirea.schedule.domain.Classroom;
-import com.belenot.mirea.schedule.domain.Schedule;
 import com.belenot.mirea.schedule.domain.ScheduledSubject;
+import com.belenot.mirea.schedule.domain.StudentGroup;
 import com.belenot.mirea.schedule.domain.Subject;
 import com.belenot.mirea.schedule.domain.Teacher;
 import com.belenot.mirea.schedule.service.ClassroomService;
@@ -39,17 +40,11 @@ public class ScheduleController {
     private ClassroomService classroomService;
     @Autowired
     private ScheduledSubjectDao scheduledSubjectDao;
-    
-    @ResponseBody
-    @GetMapping( path = "/schedule/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE )
-    public Schedule getSchedule(@PathVariable int id) {
-	return scheduleService.getSchedule(id);
-    }
 
     @ResponseBody
-    @GetMapping( path = "/schedule", produces = MediaType.APPLICATION_JSON_UTF8_VALUE )
-    public Map<Integer, String> getSchedulesGroups() {
-	return scheduleService.getSchedulesGroups();
+    @GetMapping( path = "/studentgroup", produces = MediaType.APPLICATION_JSON_UTF8_VALUE )
+    public List<StudentGroup> getStudentGroups() {
+	return scheduleService.getStudentGroups();
     }
 
     @ResponseBody

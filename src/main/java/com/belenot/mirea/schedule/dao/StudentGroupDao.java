@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import com.belenot.mirea.schedule.domain.Subject;
+import com.belenot.mirea.schedule.domain.StudentGroup;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -12,38 +12,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class SubjectDao {
+public class StudentGroupDao {
     @Autowired
     private SessionFactory sessionFactory;
 
     @Transactional
-    public Subject getSubject(int id) {
+    public StudentGroup getStudentGroup(int id) {
 	Session session = sessionFactory.getCurrentSession();
-        return session.byId(Subject.class).load(id);
+        return session.byId(StudentGroup.class).load(id);
     }
 
     @Transactional
-    public Subject addSubject(Subject subject) {
+    public void deleteStudentGroup(StudentGroup studentGroup) {
 	Session session = sessionFactory.getCurrentSession();
-	session.save(subject);
-        return subject;
+	session.delete(studentGroup);
     }
 
     @Transactional
-    public void deleteSubject(Subject subject) {
+    public StudentGroup getByGroupName(String groupName) {
 	Session session = sessionFactory.getCurrentSession();
-	session.delete(subject);
+	return session.bySimpleNaturalId(StudentGroup.class).load(groupName);
     }
+
+    @Transactional
+    public List<StudentGroup> getStudentGroups() {
+	Session session = sessionFactory.getCurrentSession();
+	List<StudentGroup> studentGroups = session.createQuery("select sg from StudentGroup sg", StudentGroup.class).list();
+	return studentGroups;
+    }
+	
     
-    @Transactional
-    public Subject getByTitle(String title) {
-	Session session = sessionFactory.getCurrentSession();
-	return session.bySimpleNaturalId(Subject.class).load(title);
-    }
-
-    @Transactional
-    public List<Subject> getSubjects() {
-	Session session = sessionFactory.getCurrentSession();
-	return session.createQuery("select s from Subject s", Subject.class).list();
-    }
 }

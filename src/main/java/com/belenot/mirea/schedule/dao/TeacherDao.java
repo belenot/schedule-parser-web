@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import com.belenot.mirea.schedule.domain.Schedule;
 import com.belenot.mirea.schedule.domain.Teacher;
 
 import org.hibernate.Session;

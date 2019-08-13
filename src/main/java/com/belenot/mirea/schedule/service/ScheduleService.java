@@ -12,8 +12,10 @@ import java.util.Map;
 import com.belenot.mirea.schedule.ScheduleModel;
 import com.belenot.mirea.schedule.ScheduleParser;
 import com.belenot.mirea.schedule.ScheduledSubjectModel;
-import com.belenot.mirea.schedule.dao.ScheduleDao;
+import com.belenot.mirea.schedule.dao.StudentGroupDao;
+import com.belenot.mirea.schedule.dao.ScheduledSubjectDao;
 import com.belenot.mirea.schedule.domain.Classroom;
+import com.belenot.mirea.schedule.domain.StudentGroup;
 import com.belenot.mirea.schedule.domain.Schedule;
 import com.belenot.mirea.schedule.domain.ScheduledSubject;
 import com.belenot.mirea.schedule.domain.ScheduledSubject.LessonTime;
@@ -40,7 +42,9 @@ public class ScheduleService implements Closeable, ApplicationListener<ContextRe
     private Map<String, Boolean> schedulesUpdateStatus = new HashMap<>();
     
     @Autowired
-    private ScheduleDao scheduleDao;
+    private StudentGroupDao studentGroupDao;
+    @Autowired
+    private ScheduledSubjectDao scheduledSubjectDao;
     
     @Autowired
     private Environment env;
@@ -66,18 +70,14 @@ public class ScheduleService implements Closeable, ApplicationListener<ContextRe
     public Map<String, Boolean> getSchedulesUpdateStatus() {
 	return schedulesUpdateStatus;
     }
-
-    public Map<Integer, String> getSchedulesGroups() {
-	return scheduleDao.getSchedulesGroups();
-    }
     
     public Map<String, Boolean> saveAllSchedules() {
 	Map<String, Boolean> saveResults = new HashMap<>();
 	for (String groupName : parser.getGroupNames()) {
 	    try {
 		groupName = groupName.substring(0, 10);
-		Schedule schedule = parseSchedule(groupName);
-		scheduleDao.addSchedule(schedule);
+	        Schedule schedule = parseSchedule(groupName);
+		scheduledSubjectDao.addSchedule(schedule);
 	    } catch (Exception exc) {
 		saveResults.put(groupName, false);
 		logger.error("GroupName: " + groupName, exc);
@@ -88,18 +88,19 @@ public class ScheduleService implements Closeable, ApplicationListener<ContextRe
 	return saveResults;
     }
 
-    public Schedule getSchedule(int id) {
-        return scheduleDao.getFullLoaded(id);
+    public List<StudentGroup> getStudentGroups() {
+	return studentGroupDao.getStudentGroups();
     }
     
     public Schedule getSchedule(String groupName) {
-	Schedule schedule = scheduleDao.getByGroupName(groupName);
-	if (schedule == null) {
+	Schedule schedule = null;
+	StudentGroup studentGroup = studentGroupDao.getByGroupName(groupName);
+	if (studentGroup == null) {
 	    schedule = parseSchedule(groupName);
 	    if (schedule == null) return null;
-	    scheduleDao.addSchedule(schedule);
+	    scheduledSubjectDao.addSchedule(schedule);
 	} 
-	schedule = scheduleDao.getFullLoaded(schedule.getId());
+	//schedule = scheduleDao.getFullLoaded(schedule.getId());
 	return schedule;
     }
     
@@ -108,9 +109,11 @@ public class ScheduleService implements Closeable, ApplicationListener<ContextRe
     }
 
     protected Schedule parseSchedule(String groupName) {
-	Schedule schedule = new Schedule();
+        Schedule schedule = new Schedule();
 	List<ScheduledSubject> scheduledSubjects = new ArrayList<>(400);
-	schedule.setGroupName(groupName);
+	StudentGroup studentGroup = new  StudentGroup();
+	studentGroup.setGroupName(groupName);
+	schedule.setStudentGroup(studentGroup);
 	ScheduleModel model = parser.parseSchedule(groupName);
 	for (ScheduledSubjectModel subjectModel : model.getScheduledSubjectsModels()) {
 	    scheduledSubjects.add(convertSubject(subjectModel));
