@@ -1,6 +1,6 @@
 import Subject from './Subject'
 
-const Day = ({subjects, date}) => (
+const Day = ({scheduledSubjects, date}) => (
     <section className="day">
 	<label className='date'>{date}</label>
 	<div class='subject header'>
@@ -10,7 +10,7 @@ const Day = ({subjects, date}) => (
 	    <label>Кабинет</label>
 	    <label>Преподаватель</label>
 	</div>
-	{subjects.map( (subject, i) =>
+	{scheduledSubjects.map( (subject, i) =>
 	    <Subject key={i} {...subject} />
 	)}
     </section>

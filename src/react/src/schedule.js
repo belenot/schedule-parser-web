@@ -2,28 +2,34 @@ import React from 'react'
 import ReactDOM  from 'react-dom'
 
 import Schedule from './component/Schedule'
+import ControlPanel from './component/ControlPanel'
+
+
+import AppDispatcher from './AppDispatcher'
+import appActions from './appActions'
+import api from './api/serverApi'
+import ScheduleStore from './store/ScheduleStore'
 
 window.React = React;
+window.api = api
+//var dispatcher = new AppDispatcher();
+//var scheduleStore = new ScheduleStore(dispatcher, api)
+//var actions = appActions(dispatcher)
 
-const loadSchedule = () => {
-    let xhr = new XMLHttpRequest()
-    xhr.open("get", "/schedule/api/"+encodeURIComponent("БАСО-02-16"))
-    xhr.onload =() => {
-	if (xhr.status === 200) {
-	    rerender(JSON.parse(xhr.responseText));
-	} else {
-	    alert("Error! Can't get schedule from server");
-	}
-    }
-    xhr.send();
-}
-
-var rerender = (schedule) => {
+var rerenderSchedule = (schedule) => {
     ReactDOM.render(
-	<Schedule {...schedule} />,
+	<Schedule {...{...schedule, ...actions}} />,
 	document.querySelector('#app')
     )
 }
 
-window.onload = () => loadSchedule()
+var rerenderControlPanel = (data) => {
+    ReactDOM.render(
+	<ControlPanel {...{...data, ...actions}} />,
+	document.querySelector('#control-panel')
+    )
+}
 
+//window.onload = () => api.getGroups((r) => rerenderControlPanel({groups: r}), (msg)=>alert(msg))
+
+//scheduleStore.on('SCHEDULE', () => rerenderSchedule(scheduleStore.getSchedule()))

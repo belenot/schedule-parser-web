@@ -47779,37 +47779,55 @@ Object.defineProperty(exports, "__esModule", {
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var origin = "/schedule/api";
+var apiEntries = {
+   studentGroup: origin + "/studentgroup",
+   updateStatus: origin + "/update/status",
+   teacher: origin + "/teacher",
+   subject: origin + "/subject",
+   classroom: origin + "/classroom",
+   filter: origin + "/schedule/filter"
+};
+
 var serverApi = {
-   loadSchedule: function loadSchedule(id) {
-      var handler = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function (f) {
-         return f;
-      };
-      var errorHandler = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function (f) {
-         return f;
-      };
-
-      request("/" + id, function (r) {
+   studentGroup: function studentGroup(handler, errHandler, id) {
+      request(apiEntries.studentGroup + (id ? "/" + id : ""), function (r) {
          return handler(JSON.parse(r));
-      }, errorHandler);
+      }, errHandler);
    },
-   getGroups: function getGroups() {
-      var handler = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function (f) {
-         return f;
-      };
-      var errorHandler = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function (f) {
-         return f;
-      };
-
-      request("", function (r) {
+   updateStatus: function updateStatus(handler, errHandler, id) {
+      request(apiEntries.updateStatus, function (r) {
          return handler(JSON.parse(r));
-      }, errorHandler);
+      }, errHandler);
+   },
+   teacher: function teacher(handler, errHandler, id) {
+      request(apiEntries.teacher + (id ? "/" + id : ""), function (r) {
+         return handler(JSON.parse(r));
+      }, errHandler);
+   },
+   subject: function subject(handler, errHandler, id) {
+      request(apiEntries.subject + (id ? "/" + id : ""), function (r) {
+         return handler(JSON.parse(r));
+      }, errHandler);
+   },
+   classroom: function classroom(handler, errHandler, id) {
+      request(apiEntries.classroom + (id ? "/" + id : ""), function (r) {
+         return handler(JSON.parse(r));
+      }, errHandler);
+   },
+   scheduledSubject: function scheduledSubject(handler, errHandler, scheduledSubjectFilter) {
+      request(apiEntries.filter, function (r) {
+         return handler(JSON.parse(r));
+      }, errHandler, scheduledSubjectFilter);
    }
 };
 
-var request = function request(address, callback, errorHandler, body) {
+var request = function request(address, callback) {
+   var errorHandler = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function (f) {
+      return f;
+   };
+   var body = arguments[3];
    var method = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : "get";
 
-   address = origin + address;
    var xhr = new XMLHttpRequest();
    method = (typeof body === "undefined" ? "undefined" : _typeof(body)) === 'object' ? "post" : "get";
    xhr.open(method, address);
@@ -48144,9 +48162,10 @@ var _ScheduleStore2 = _interopRequireDefault(_ScheduleStore);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 window.React = _react2.default;
-var dispatcher = new _AppDispatcher2.default();
-var scheduleStore = new _ScheduleStore2.default(dispatcher, _serverApi2.default);
-var actions = (0, _appActions2.default)(dispatcher);
+window.api = _serverApi2.default;
+//var dispatcher = new AppDispatcher();
+//var scheduleStore = new ScheduleStore(dispatcher, api)
+//var actions = appActions(dispatcher)
 
 var rerenderSchedule = function rerenderSchedule(schedule) {
     _reactDom2.default.render(_react2.default.createElement(_Schedule2.default, _extends({}, schedule, actions)), document.querySelector('#app'));
@@ -48156,17 +48175,9 @@ var rerenderControlPanel = function rerenderControlPanel(data) {
     _reactDom2.default.render(_react2.default.createElement(_ControlPanel2.default, _extends({}, data, actions)), document.querySelector('#control-panel'));
 };
 
-window.onload = function () {
-    return _serverApi2.default.getGroups(function (r) {
-        return rerenderControlPanel({ groups: r });
-    }, function (msg) {
-        return alert(msg);
-    });
-};
+//window.onload = () => api.getGroups((r) => rerenderControlPanel({groups: r}), (msg)=>alert(msg))
 
-scheduleStore.on('SCHEDULE', function () {
-    return rerenderSchedule(scheduleStore.getSchedule());
-});
+//scheduleStore.on('SCHEDULE', () => rerenderSchedule(scheduleStore.getSchedule()))
 
 /***/ }),
 
