@@ -40,3 +40,6 @@ h1 {
     color: gray;
     text-align: center;
 }
+[data-clicked] {
+    background: linear-gradient(0deg, hsl(220, 50%, 80%), hsl(210, 50%, 85%));
+}

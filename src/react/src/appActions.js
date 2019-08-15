@@ -1,13 +1,16 @@
 const appActions = (dispatcher) => (
     {
-	clickComponent: (data) => {
-	    dispatcher.handleAction({type: "CLICK_COMPONENT", data});
+	onFilter: (data) => {
+	    dispatcher.handleAction({type: "ON_FILTER", data});
 	},
-	filterSchedule: (data) => {
-	    dispatcher.handleAction({type: "FILTER_SCHEDULE", data});
+	onItemClick: (data) => {
+	    dispatcher.handleAction({type: "ON_ITEM_CLICK", data})
 	},
-	loadSchedule: (data) => {
-	    dispatcher.handleAction({type:"LOAD_SCHEDULE", data});
+	addDateInterval: () => {
+	    dispatcher.handleAction({type: "ON_ADD_DATE_INTERVAL", data: {}})
+	},
+	removeDateInterval: (data) => {
+	    dispatcher.handleAction({type: "ON_REMOVE_DATE_INTERVAL", data})
 	}
     }
 )

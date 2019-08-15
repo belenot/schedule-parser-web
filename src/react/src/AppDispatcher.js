@@ -3,7 +3,13 @@ import { Dispatcher } from 'flux'
 class AppDispatcher extends Dispatcher {
     handleAction(action) {
 	this.dispatch({
-	    source: 'VIEW_ACTION',
+	    source: 'VIEW',
+	    action
+	})
+    }
+    handleApi(action) {
+	this.dispatch({
+	    source: 'API',
 	    action
 	})
     }

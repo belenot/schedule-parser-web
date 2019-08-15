@@ -8,26 +8,51 @@ const apiEntries = {
     filter: origin + "/schedule/filter"
 }
     
-const serverApi = {
-    studentGroup: (handler, errHandler, id) => {
-	request(apiEntries.studentGroup + (id?`/${id}`:""), r => handler(JSON.parse(r)), errHandler)
+const serverApi = (dispatcher) => ({
+    studentGroup: (id) => {
+	let type = 'LOAD_STUDENT_GROUP'
+	request(apiEntries.studentGroup + (id?`/${id}`:""),
+		callback(dispatcher, type, 'OK', true),
+		callback(dispatcher, type, 'ERR')
+	)
     },
-    updateStatus: (handler, errHandler, id) => {
-	request(apiEntries.updateStatus, r => handler(JSON.parse(r)), errHandler)
+    updateStatus: (id) => {
+	let type = 'UPDATE_STATUS'
+	request(apiEntries.updateStatus,
+		callback(dispatcher, type, 'OK', true),
+		callback(dispatcher, type, 'ERR')
+	)
     },
-    teacher: (handler, errHandler, id) => {
-	request(apiEntries.teacher + (id?`/${id}`:""), r => handler(JSON.parse(r)), errHandler)
+    teacher: (id) => {
+	let type = 'LOAD_TEACHER'
+	request(apiEntries.teacher + (id?`/${id}`:""),
+		callback(dispatcher, type, 'OK', true),
+		callback(dispatcher, type, 'ERR')
+	)
     },
-    subject: (handler, errHandler, id) => {
-	request(apiEntries.subject + (id?`/${id}`:""), r => handler(JSON.parse(r)), errHandler)
+    subject: (id) => {
+	let type = 'LOAD_SUBJECT'
+	request(apiEntries.subject + (id?`/${id}`:""),
+		callback(dispatcher, type, 'OK', true),
+		callback(dispatcher, type, 'ERR')
+	)
     },
-    classroom: (handler, errHandler, id) => {
-	request(apiEntries.classroom + (id?`/${id}`:""), r => handler(JSON.parse(r)), errHandler)
+    classroom: (id) => {
+	let type = 'LOAD_CLASSROOM'
+	request(apiEntries.classroom + (id?`/${id}`:""),
+		callback(dispatcher, type, 'OK', true),
+		callback(dispatcher, type, 'ERR')
+	)
     },
-    scheduledSubject: (handler, errHandler, scheduledSubjectFilter) =>{
-	request(apiEntries.filter, r => handler(JSON.parse(r)), errHandler, scheduledSubjectFilter)
+    scheduledSubject: (scheduledSubjectFilter) =>{
+	let type = 'LOAD_SCHEDULED_SUBJECT'
+	request(apiEntries.filter,
+		callback(dispatcher, type, 'OK', true),
+		callback(dispatcher, type, 'ERR'),
+		scheduledSubjectFilter
+	)
     }	
-}
+})
 
 const request = (address, callback, errorHandler=f=>f, body, method="get") => {
     let xhr = new XMLHttpRequest();
@@ -38,6 +63,14 @@ const request = (address, callback, errorHandler=f=>f, body, method="get") => {
     }
     xhr.onload = () => xhr.status === 200 ? callback(xhr.responseText) : errorHandler(xhr.responseText)
     xhr.send(typeof body === 'object' ? JSON.stringify(body) : null)
+}
+
+const callback = (dispatcher, type, status, isJSON) => (response) => {
+    dispatcher.handleApi({
+	type,
+	status,
+	data: isJSON?JSON.parse(response):response
+    })
 }
 
 export default serverApi

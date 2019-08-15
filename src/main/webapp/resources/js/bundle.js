@@ -47723,7 +47723,7 @@ if (false) {} else {
 
 
 Object.defineProperty(exports, "__esModule", {
-				value: true
+			value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -47737,25 +47737,33 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var AppDispatcher = function (_Dispatcher) {
-				_inherits(AppDispatcher, _Dispatcher);
+			_inherits(AppDispatcher, _Dispatcher);
 
-				function AppDispatcher() {
-								_classCallCheck(this, AppDispatcher);
+			function AppDispatcher() {
+						_classCallCheck(this, AppDispatcher);
 
-								return _possibleConstructorReturn(this, (AppDispatcher.__proto__ || Object.getPrototypeOf(AppDispatcher)).apply(this, arguments));
-				}
+						return _possibleConstructorReturn(this, (AppDispatcher.__proto__ || Object.getPrototypeOf(AppDispatcher)).apply(this, arguments));
+			}
 
-				_createClass(AppDispatcher, [{
-								key: 'handleAction',
-								value: function handleAction(action) {
-												this.dispatch({
-																source: 'VIEW_ACTION',
-																action: action
-												});
-								}
-				}]);
+			_createClass(AppDispatcher, [{
+						key: 'handleAction',
+						value: function handleAction(action) {
+									this.dispatch({
+												source: 'VIEW',
+												action: action
+									});
+						}
+			}, {
+						key: 'handleApi',
+						value: function handleApi(action) {
+									this.dispatch({
+												source: 'API',
+												action: action
+									});
+						}
+			}]);
 
-				return AppDispatcher;
+			return AppDispatcher;
 }(_flux.Dispatcher);
 
 exports.default = AppDispatcher;
@@ -47773,71 +47781,77 @@ exports.default = AppDispatcher;
 
 
 Object.defineProperty(exports, "__esModule", {
-   value: true
+			value: true
 });
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var origin = "/schedule/api";
 var apiEntries = {
-   studentGroup: origin + "/studentgroup",
-   updateStatus: origin + "/update/status",
-   teacher: origin + "/teacher",
-   subject: origin + "/subject",
-   classroom: origin + "/classroom",
-   filter: origin + "/schedule/filter"
+			studentGroup: origin + "/studentgroup",
+			updateStatus: origin + "/update/status",
+			teacher: origin + "/teacher",
+			subject: origin + "/subject",
+			classroom: origin + "/classroom",
+			filter: origin + "/schedule/filter"
 };
 
-var serverApi = {
-   studentGroup: function studentGroup(handler, errHandler, id) {
-      request(apiEntries.studentGroup + (id ? "/" + id : ""), function (r) {
-         return handler(JSON.parse(r));
-      }, errHandler);
-   },
-   updateStatus: function updateStatus(handler, errHandler, id) {
-      request(apiEntries.updateStatus, function (r) {
-         return handler(JSON.parse(r));
-      }, errHandler);
-   },
-   teacher: function teacher(handler, errHandler, id) {
-      request(apiEntries.teacher + (id ? "/" + id : ""), function (r) {
-         return handler(JSON.parse(r));
-      }, errHandler);
-   },
-   subject: function subject(handler, errHandler, id) {
-      request(apiEntries.subject + (id ? "/" + id : ""), function (r) {
-         return handler(JSON.parse(r));
-      }, errHandler);
-   },
-   classroom: function classroom(handler, errHandler, id) {
-      request(apiEntries.classroom + (id ? "/" + id : ""), function (r) {
-         return handler(JSON.parse(r));
-      }, errHandler);
-   },
-   scheduledSubject: function scheduledSubject(handler, errHandler, scheduledSubjectFilter) {
-      request(apiEntries.filter, function (r) {
-         return handler(JSON.parse(r));
-      }, errHandler, scheduledSubjectFilter);
-   }
+var serverApi = function serverApi(dispatcher) {
+			return {
+						studentGroup: function studentGroup(id) {
+									var type = 'LOAD_STUDENT_GROUP';
+									request(apiEntries.studentGroup + (id ? "/" + id : ""), callback(dispatcher, type, 'OK', true), callback(dispatcher, type, 'ERR'));
+						},
+						updateStatus: function updateStatus(id) {
+									var type = 'UPDATE_STATUS';
+									request(apiEntries.updateStatus, callback(dispatcher, type, 'OK', true), callback(dispatcher, type, 'ERR'));
+						},
+						teacher: function teacher(id) {
+									var type = 'LOAD_TEACHER';
+									request(apiEntries.teacher + (id ? "/" + id : ""), callback(dispatcher, type, 'OK', true), callback(dispatcher, type, 'ERR'));
+						},
+						subject: function subject(id) {
+									var type = 'LOAD_SUBJECT';
+									request(apiEntries.subject + (id ? "/" + id : ""), callback(dispatcher, type, 'OK', true), callback(dispatcher, type, 'ERR'));
+						},
+						classroom: function classroom(id) {
+									var type = 'LOAD_CLASSROOM';
+									request(apiEntries.classroom + (id ? "/" + id : ""), callback(dispatcher, type, 'OK', true), callback(dispatcher, type, 'ERR'));
+						},
+						scheduledSubject: function scheduledSubject(scheduledSubjectFilter) {
+									var type = 'LOAD_SCHEDULED_SUBJECT';
+									request(apiEntries.filter, callback(dispatcher, type, 'OK', true), callback(dispatcher, type, 'ERR'), scheduledSubjectFilter);
+						}
+			};
 };
 
 var request = function request(address, callback) {
-   var errorHandler = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function (f) {
-      return f;
-   };
-   var body = arguments[3];
-   var method = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : "get";
+			var errorHandler = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function (f) {
+						return f;
+			};
+			var body = arguments[3];
+			var method = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : "get";
 
-   var xhr = new XMLHttpRequest();
-   method = (typeof body === "undefined" ? "undefined" : _typeof(body)) === 'object' ? "post" : "get";
-   xhr.open(method, address);
-   if (method === 'post') {
-      xhr.setRequestHeader('Content-Type', 'application/json');
-   }
-   xhr.onload = function () {
-      return xhr.status === 200 ? callback(xhr.responseText) : errorHandler(xhr.responseText);
-   };
-   xhr.send((typeof body === "undefined" ? "undefined" : _typeof(body)) === 'object' ? JSON.stringify(body) : null);
+			var xhr = new XMLHttpRequest();
+			method = (typeof body === "undefined" ? "undefined" : _typeof(body)) === 'object' ? "post" : "get";
+			xhr.open(method, address);
+			if (method === 'post') {
+						xhr.setRequestHeader('Content-Type', 'application/json');
+			}
+			xhr.onload = function () {
+						return xhr.status === 200 ? callback(xhr.responseText) : errorHandler(xhr.responseText);
+			};
+			xhr.send((typeof body === "undefined" ? "undefined" : _typeof(body)) === 'object' ? JSON.stringify(body) : null);
+};
+
+var callback = function callback(dispatcher, type, status, isJSON) {
+			return function (response) {
+						dispatcher.handleApi({
+									type: type,
+									status: status,
+									data: isJSON ? JSON.parse(response) : response
+						});
+			};
 };
 
 exports.default = serverApi;
@@ -47859,14 +47873,17 @@ Object.defineProperty(exports, "__esModule", {
 });
 var appActions = function appActions(dispatcher) {
 				return {
-								clickComponent: function clickComponent(data) {
-												dispatcher.handleAction({ type: "CLICK_COMPONENT", data: data });
+								onFilter: function onFilter(data) {
+												dispatcher.handleAction({ type: "ON_FILTER", data: data });
 								},
-								filterSchedule: function filterSchedule(data) {
-												dispatcher.handleAction({ type: "FILTER_SCHEDULE", data: data });
+								onItemClick: function onItemClick(data) {
+												dispatcher.handleAction({ type: "ON_ITEM_CLICK", data: data });
 								},
-								loadSchedule: function loadSchedule(data) {
-												dispatcher.handleAction({ type: "LOAD_SCHEDULE", data: data });
+								addDateInterval: function addDateInterval() {
+												dispatcher.handleAction({ type: "ON_ADD_DATE_INTERVAL", data: {} });
+								},
+								removeDateInterval: function removeDateInterval(data) {
+												dispatcher.handleAction({ type: "ON_REMOVE_DATE_INTERVAL", data: data });
 								}
 				};
 };
@@ -47889,36 +47906,131 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 var ControlPanel = function ControlPanel(_ref) {
-	var _ref$groups = _ref.groups,
-	    groups = _ref$groups === undefined ? {} : _ref$groups,
-	    loadSchedule = _ref.loadSchedule,
-	    filterSchedule = _ref.filterSchedule;
-
-	var selectedGroup = void 0;
+	var _ref$studentGroups = _ref.studentGroups,
+	    studentGroups = _ref$studentGroups === undefined ? [] : _ref$studentGroups,
+	    _ref$teachers = _ref.teachers,
+	    teachers = _ref$teachers === undefined ? [] : _ref$teachers,
+	    _ref$subjects = _ref.subjects,
+	    subjects = _ref$subjects === undefined ? [] : _ref$subjects,
+	    _ref$classrooms = _ref.classrooms,
+	    classrooms = _ref$classrooms === undefined ? [] : _ref$classrooms,
+	    _ref$filter = _ref.filter,
+	    filter = _ref$filter === undefined ? {} : _ref$filter,
+	    _ref$onFilter = _ref.onFilter,
+	    onFilter = _ref$onFilter === undefined ? function (f) {
+		return f;
+	} : _ref$onFilter;
 	return React.createElement(
-		"section",
-		{ id: "control-panel" },
+		'section',
+		{ id: 'control-panel' },
 		React.createElement(
-			"form",
+			'form',
 			{ onSubmit: function onSubmit(e) {
-					return e.preventDefault();
+					e.preventDefault();onFilter({ status: 'OK' });
 				} },
+			[['STUDENT_GROUPS', studentGroups, 'groupName'], ['TEACHERS', teachers, 'shortName'], ['SUBJECTS', subjects, 'title'], ['CLASSROOMS', classrooms, 'number']].map(function (s) {
+				return React.createElement(
+					'select',
+					{ key: s[0], multiple: true, onChange: function onChange(e) {
+							return onFilter({
+								status: s[0],
+								data: {
+									elements: Array.from(e.target.options).filter(function (opt) {
+										return opt.selected;
+									}).map(function (opt) {
+										return { value: opt.value };
+									})
+								}
+							});
+						} },
+					s[1].map(function (el) {
+						return React.createElement(
+							'option',
+							{ key: el.id, value: el.id },
+							el[s[2]]
+						);
+					})
+				);
+			}),
 			React.createElement(
-				"select",
-				{ onChange: function onChange(e) {
-						return loadSchedule({ id: e.target.value });
+				'select',
+				{ multiple: true, onChange: function onChange(e) {
+						return onFilter({
+							status: 'LESSON_TIMES',
+							data: {
+								elements: Array.from(e.target.options).filter(function (op) {
+									return op.selected;
+								}).map(function (op) {
+									return { value: op.value };
+								})
+							}
+						});
 					} },
-				Object.keys(groups).map(function (id) {
+				['L1', 'L2', 'L3', 'L4', 'L5', 'L6'].map(function (lt, i) {
 					return React.createElement(
-						"option",
-						{ key: id, value: id },
-						groups[id]
+						'option',
+						{ key: lt, value: lt },
+						i + 1 + "пара"
 					);
 				})
+			),
+			React.createElement(
+				'select',
+				{ multiple: true, onChange: function onChange(e) {
+						return onFilter({
+							status: 'LESSON_TYPES',
+							data: {
+								elements: Array.from(e.target.options).filter(function (op) {
+									return op.selected;
+								}).map(function (op) {
+									return { value: op.value };
+								})
+							}
+						});
+					} },
+				['LECTION', 'PRACTICE', 'LAB'].map(function (lt) {
+					return React.createElement(
+						'option',
+						{ key: lt, value: lt },
+						lt
+					);
+				})
+			),
+			React.createElement(
+				'div',
+				{ className: 'date-intervals' },
+				filter.dateIntervals.map(function (di, i) {
+					return React.createElement(
+						'div',
+						{ key: i },
+						React.createElement('input', { type: 'date',
+							value: di.value.firstValue,
+							onChange: function onChange(e) {
+								return onFilter({ status: 'FIRST_DATE_INTERVAL', data: { id: i, value: e.target.value } });
+							} }),
+						React.createElement('input', { type: 'date',
+							value: di.value.lastValue,
+							onChange: function onChange(e) {
+								return onFilter({ status: 'LAST_DATE_INTERVAL', data: { id: i, value: e.target.value } });
+							} }),
+						React.createElement('button', { onClick: function onClick(e) {
+								e.preventDefault();onFilter({ status: 'REMOVE_DATE_INTERVAL', data: { id: i } });
+							} })
+					);
+				}),
+				React.createElement('button', { onClick: function onClick(e) {
+						e.preventDefault();onFilter({ status: 'ADD_DATE_INTERVAL', data: {} });
+					} })
+			),
+			React.createElement(
+				'button',
+				null,
+				'filter'
 			)
 		)
 	);
 };
+
 exports.default = ControlPanel;
 
 /***/ }),
@@ -47947,7 +48059,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var Day = function Day(_ref) {
 				var scheduledSubjects = _ref.scheduledSubjects,
-				    date = _ref.date;
+				    date = _ref.date,
+				    actions = _ref.actions;
 				return React.createElement(
 								'section',
 								{ className: 'day' },
@@ -47958,7 +48071,7 @@ var Day = function Day(_ref) {
 								),
 								React.createElement(
 												'div',
-												{ 'class': 'subject header' },
+												{ className: 'subject header' },
 												React.createElement(
 																'label',
 																null,
@@ -47985,8 +48098,10 @@ var Day = function Day(_ref) {
 																'\u041F\u0440\u0435\u043F\u043E\u0434\u0430\u0432\u0430\u0442\u0435\u043B\u044C'
 												)
 								),
-								scheduledSubjects.map(function (subject, i) {
-												return React.createElement(_Subject2.default, _extends({ key: i }, subject));
+								scheduledSubjects.sort(function (s1, s2) {
+												return s1.lessonTime[1] - s2.lessonTime[1];
+								}).map(function (subject, i) {
+												return React.createElement(_Subject2.default, _extends({ key: i }, subject, { onItemClick: actions.onItemClick }));
 								})
 				);
 };
@@ -48018,8 +48133,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var Schedule = function Schedule(_ref) {
-			var groupName = _ref.groupName,
-			    scheduledSubjects = _ref.scheduledSubjects;
+			var scheduledSubjects = _ref.scheduledSubjects,
+			    actions = _ref.actions;
 
 			var grouppedScheduledSubjects = scheduledSubjects.reduce(function (ac, n) {
 						if (ac[n.date]) {
@@ -48032,15 +48147,10 @@ var Schedule = function Schedule(_ref) {
 			return React.createElement(
 						"section",
 						{ className: "schedule" },
-						React.createElement(
-									"h1",
-									null,
-									groupName
-						),
 						Object.keys(grouppedScheduledSubjects).sort(function (d1, d2) {
 									return new Date(d1) - new Date(d2);
 						}).map(function (date, i) {
-									return React.createElement(_Day2.default, { key: i, date: date, scheduledSubjects: grouppedScheduledSubjects[date] });
+									return React.createElement(_Day2.default, { key: i, date: date, scheduledSubjects: grouppedScheduledSubjects[date], actions: actions });
 						})
 			);
 };
@@ -48070,10 +48180,14 @@ var Subject = function Subject(_ref) {
         classroom = _ref.classroom,
         teacher = _ref.teacher,
         lessonType = _ref.lessonType,
-        lessonTime = _ref.lessonTime;
+        lessonTime = _ref.lessonTime,
+        _ref$onItemClick = _ref.onItemClick,
+        onItemClick = _ref$onItemClick === undefined ? function (f) {
+        return f;
+    } : _ref$onItemClick;
     return React.createElement(
         'section',
-        { className: 'subject' },
+        { className: 'subject', style: subject._clicked ? { background: subject._backgroundColor } : undefined },
         React.createElement(
             'label',
             { className: 'lesson-time' },
@@ -48081,7 +48195,9 @@ var Subject = function Subject(_ref) {
         ),
         React.createElement(
             'label',
-            { className: 'title' },
+            { className: 'title', onClick: function onClick(e) {
+                    return onItemClick({ status: 'SUBJECT', id: subject.id });
+                } },
             subject.title
         ),
         React.createElement(
@@ -48092,12 +48208,12 @@ var Subject = function Subject(_ref) {
         React.createElement(
             'label',
             { className: 'classroom' },
-            "N/A" || false
+            classroom && classroom.number || "N/A"
         ),
         React.createElement(
             'label',
             { className: 'teacher' },
-            "N/A" || false
+            teacher && teacher.shortName || "N/A"
         )
     );
 };
@@ -48159,25 +48275,297 @@ var _ScheduleStore = __webpack_require__(/*! ./store/ScheduleStore */ "./src/sto
 
 var _ScheduleStore2 = _interopRequireDefault(_ScheduleStore);
 
+var _ControlPanelStore = __webpack_require__(/*! ./store/ControlPanelStore */ "./src/store/ControlPanelStore.js");
+
+var _ControlPanelStore2 = _interopRequireDefault(_ControlPanelStore);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 window.React = _react2.default;
-window.api = _serverApi2.default;
-//var dispatcher = new AppDispatcher();
-//var scheduleStore = new ScheduleStore(dispatcher, api)
-//var actions = appActions(dispatcher)
+var dispatcher = new _AppDispatcher2.default();
+var api = (0, _serverApi2.default)(dispatcher);
+var scheduleStore = new _ScheduleStore2.default(dispatcher, api);
+var controlPanelStore = new _ControlPanelStore2.default(dispatcher, api);
+var actions = (0, _appActions2.default)(dispatcher);
 
-var rerenderSchedule = function rerenderSchedule(schedule) {
-    _reactDom2.default.render(_react2.default.createElement(_Schedule2.default, _extends({}, schedule, actions)), document.querySelector('#app'));
+var renderSchedule = function renderSchedule(data) {
+    _reactDom2.default.render(_react2.default.createElement(_Schedule2.default, _extends({}, data, { actions: actions })), document.querySelector('#app'));
 };
 
-var rerenderControlPanel = function rerenderControlPanel(data) {
+var renderControlPanel = function renderControlPanel(data) {
     _reactDom2.default.render(_react2.default.createElement(_ControlPanel2.default, _extends({}, data, actions)), document.querySelector('#control-panel'));
 };
 
 //window.onload = () => api.getGroups((r) => rerenderControlPanel({groups: r}), (msg)=>alert(msg))
 
 //scheduleStore.on('SCHEDULE', () => rerenderSchedule(scheduleStore.getSchedule()))
+window.onload = function () {
+    api.studentGroup();
+    api.teacher();
+    api.subject();
+    api.classroom();
+};
+
+scheduleStore.on("LOAD_SCHEDULED_SUBJECT", function () {
+    return renderSchedule(scheduleStore.state);
+});
+scheduleStore.on("ON_ITEM_CLICK", function () {
+    return renderSchedule(scheduleStore.state);
+});
+controlPanelStore.on('LOAD_SUBJECT', function () {
+    return renderControlPanel(controlPanelStore.state);
+});
+controlPanelStore.on('LOAD_TEACHER', function () {
+    return renderControlPanel(controlPanelStore.state);
+});
+controlPanelStore.on('LOAD_CLASSROOM', function () {
+    return renderControlPanel(controlPanelStore.state);
+});
+controlPanelStore.on('LOAD_STUDENT_GROUP', function () {
+    return renderControlPanel(controlPanelStore.state);
+});
+controlPanelStore.on('ON_ADD_DATE_INTERVAL', function () {
+    return renderControlPanel(controlPanelStore.state);
+});
+controlPanelStore.on('ON_REMOVE_DATE_INTERVAL', function () {
+    return renderControlPanel(controlPanelStore.state);
+});
+controlPanelStore.on('CHANGE_FILTER', function () {
+    return renderControlPanel(controlPanelStore.state);
+});
+
+/***/ }),
+
+/***/ "./src/store/ControlPanelStore.js":
+/*!****************************************!*\
+  !*** ./src/store/ControlPanelStore.js ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _events = __webpack_require__(/*! events */ "../../../../../../../../../usr/local/lib/node_modules/webpack/node_modules/events/events.js");
+
+var _moment = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
+
+var _moment2 = _interopRequireDefault(_moment);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var dateFormat = 'YYYY-MM-DD';
+
+var ControlPanelStore = function (_EventEmitter) {
+	_inherits(ControlPanelStore, _EventEmitter);
+
+	function ControlPanelStore(dispatcher, api) {
+		var studentGroups = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+		var teachers = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+		var subjects = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
+		var classrooms = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : [];
+
+		_classCallCheck(this, ControlPanelStore);
+
+		var _this = _possibleConstructorReturn(this, (ControlPanelStore.__proto__ || Object.getPrototypeOf(ControlPanelStore)).call(this));
+
+		_this.dispatch = function (payload) {
+			var _payload$action = payload.action,
+			    type = _payload$action.type,
+			    data = _payload$action.data,
+			    status = _payload$action.status;
+
+			var source = payload.source;
+
+			switch (type) {
+				case 'ON_ITEM_CLICK':
+					//this.onItemClick(data.type, data.id);
+					//this.emit(type);
+					console.log(type);
+					break;
+
+				case 'LOAD_SUBJECT':
+					if (status == 'OK' && data.length > 1) {
+						_this._state = _extends({}, _this._state, {
+							subjects: [].concat(_toConsumableArray(data))
+						});
+					} else {
+						console.log('[' + type + '] ' + status + ': ' + data);
+					}
+					_this.emit(type);
+					break;
+
+				case 'LOAD_TEACHER':
+					if (status == 'OK' && data.length > 1) {
+						_this._state = _extends({}, _this._state, {
+							teachers: [].concat(_toConsumableArray(data))
+						});
+					} else {
+						console.log('[' + type + '] ' + status + ': ' + data);
+					}
+					_this.emit(type);
+					break;
+
+				case 'LOAD_CLASSROOM':
+					if (status == 'OK' && data.length > 1) {
+						_this._state = _extends({}, _this._state, {
+							classrooms: [].concat(_toConsumableArray(data))
+						});
+					} else {
+						console.log('[' + type + '] ' + status + ': ' + data);
+					}
+					_this.emit(type);
+					break;
+
+				case 'LOAD_STUDENT_GROUP':
+					if (status == 'OK' && data.length > 1) {
+						_this._state = _extends({}, _this._state, {
+							studentGroups: [].concat(_toConsumableArray(data))
+						});
+					} else {
+						console.log('[' + type + '] ' + status + ': ' + data);
+					}
+					_this.emit(type);
+					break;
+				case 'ON_ADD_DATE_INTERVAL':
+					_this._state.filter = _extends({}, _this._state.filter, {
+						dateIntervals: [].concat(_toConsumableArray(dateIntervals), [{
+							value: {
+								firstValue: new Date(),
+								lastValue: new Date()
+							}
+						}])
+					});
+					_this.emit(type);
+					break;
+				case 'ON_REMOVE_DATE_INTERVAL':
+					var dateIntervals = _this._state.filter.dateIntervals.filter(function (di, i) {
+						return i != data;
+					});
+					_this._state.filter.dateIntervals = dateIntervals;
+					_this.emit(type);
+					break;
+
+				case 'ON_FILTER':
+					switch (data.status) {
+						case 'OK':
+							if (data.status == 'OK') _this.api.scheduledSubject(_this._state.filter);
+							break;
+						case 'STUDENT_GROUPS':
+							_this._state.filter.studentGroupsIds = data.data.elements;
+							break;
+						case 'TEACHERS':
+							_this._state.filter.teachersIds = data.data.elements;
+							break;
+						case 'SUBJECTS':
+							_this._state.filter.subjectsIds = data.data.elements;
+							break;
+						case 'CLASSROOMS':
+							_this._state.filter.classroomsIds = data.data.elements;
+							break;
+						case 'LESSON_TIMES':
+							_this._state.filter.lessonTimes = data.data.elements;
+							break;
+						case 'LESSON_TYPES':
+							_this._state.filter.lessonTypes = data.data.elements;
+							break;
+						case 'ADD_DATE_INTERVAL':
+							_this._state.filter.dateIntervals = [].concat(_toConsumableArray(_this._state.filter.dateIntervals), [{ value: { firstValue: new Date(), lastValue: new Date() } }]);
+							break;
+						case 'REMOVE_DATE_INTERVAL':
+							_this._state.filter.dateIntervals = _this._state.filter.dateIntervals.filter(function (di, i) {
+								return i != data.data.id;
+							});
+							break;
+						case 'FIRST_DATE_INTERVAL':
+							_this._state.filter.dateIntervals = _this._state.filter.dateIntervals.map(function (di, i) {
+								return i == data.data.id ? {
+									value: {
+										firstValue: data.data.value,
+										lastValue: di.value.lastValue
+									}
+								} : di;
+							});
+							break;
+						case 'LAST_DATE_INTERVAL':
+							_this._state.filter.dateIntervals = _this._state.filter.dateIntervals.map(function (di, i) {
+								return i == data.data.id ? {
+									value: {
+										firstValue: di.value.firstValue,
+										lastValue: data.data.value
+									}
+								} : di;
+							});
+							break;
+						default:
+							return false;
+					}
+					break;
+			}
+			_this.emit('CHANGE_FILTER');
+		};
+
+		_this.onItemClick = function (type, id) {
+			type = type + 's';
+			_this._state[type] = _this._state[type].map(function (item) {
+				if (item.id == id) {
+					if (!item._clicked) {
+						item = _extends({}, item, { _clicked: true });
+					} else {
+						delete item._clicked;
+					}
+				}
+				return item;
+			});
+		};
+
+		_this.dispatcherIndex = dispatcher.register(_this.dispatch);
+		_this.api = api;
+		_this._state = {
+			teachers: teachers,
+			subjects: subjects,
+			classrooms: classrooms,
+			studentGroups: studentGroups,
+			filter: {
+				teachersIds: [],
+				studentGroupsIds: [],
+				subjectsIds: [],
+				classroomsIds: [],
+				lessonTimes: [],
+				lessonTypes: [],
+				dateIntervals: []
+			}
+		};
+		return _this;
+	}
+
+	_createClass(ControlPanelStore, [{
+		key: 'state',
+		get: function get() {
+			return this._state;
+		}
+	}]);
+
+	return ControlPanelStore;
+}(_events.EventEmitter);
+
+exports.default = ControlPanelStore;
 
 /***/ }),
 
@@ -48192,8 +48580,12 @@ var rerenderControlPanel = function rerenderControlPanel(data) {
 
 
 Object.defineProperty(exports, "__esModule", {
-			value: true
+	value: true
 });
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _events = __webpack_require__(/*! events */ "../../../../../../../../../usr/local/lib/node_modules/webpack/node_modules/events/events.js");
 
@@ -48202,6 +48594,8 @@ var _moment = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js
 var _moment2 = _interopRequireDefault(_moment);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -48213,51 +48607,98 @@ window.moment = _moment2.default;
 var dateFormat = 'YYYY-MM-DD';
 
 var ScheduleStore = function (_EventEmitter) {
-			_inherits(ScheduleStore, _EventEmitter);
+	_inherits(ScheduleStore, _EventEmitter);
 
-			function ScheduleStore(dispatcher, api) {
-						var schedule = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+	function ScheduleStore(dispatcher, api) {
+		var scheduledSubjects = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
-						_classCallCheck(this, ScheduleStore);
+		_classCallCheck(this, ScheduleStore);
 
-						var _this = _possibleConstructorReturn(this, (ScheduleStore.__proto__ || Object.getPrototypeOf(ScheduleStore)).call(this));
+		var _this = _possibleConstructorReturn(this, (ScheduleStore.__proto__ || Object.getPrototypeOf(ScheduleStore)).call(this));
 
-						_initialiseProps.call(_this);
+		_initialiseProps.call(_this);
 
-						_this.schedule = schedule;
-						_this.dispatcherIndex = dispatcher.register(_this.dispatch);
-						_this.api = api;
-						return _this;
-			}
+		_this._state = { scheduledSubjects: scheduledSubjects };
+		_this.dispatcherIndex = dispatcher.register(_this.dispatch);
+		_this.api = api;
+		return _this;
+	}
 
-			return ScheduleStore;
+	_createClass(ScheduleStore, [{
+		key: 'state',
+		get: function get() {
+			return this._state;
+		}
+	}]);
+
+	return ScheduleStore;
 }(_events.EventEmitter);
 
 var _initialiseProps = function _initialiseProps() {
-			var _this2 = this;
+	var _this2 = this;
 
-			this.getSchedule = function () {
-						return _this2.schedule;
-			};
+	this.dispatch = function (payload) {
+		var _payload$action = payload.action,
+		    type = _payload$action.type,
+		    data = _payload$action.data,
+		    status = _payload$action.status;
 
-			this.dispatch = function (payload) {
-						var _payload$action = payload.action,
-						    type = _payload$action.type,
-						    data = _payload$action.data;
+		var source = payload.source;
+		switch (type) {
+			case 'LOAD_SCHEDULED_SUBJECT':
+				if (status == 'OK') {
+					_this2._state = _extends({}, _this2.state, {
+						scheduledSubjects: [].concat(_toConsumableArray(data))
+					});
+				} else {
+					console.log('[' + type + '] ' + status + ': ' + data);
+				}
+				_this2.emit(type);
+				break;
 
-						switch (type) {
-									case 'LOAD_SCHEDULE':
-												_this2.api.loadSchedule(data.id, _this2.loadSchedule, function (msg) {
-															return alert(msg);
-												});
-												break;
-						}
-			};
+			case 'ON_ITEM_CLICK':
+				var color = (Math.random() * 360).toFixed();
+				if (data.status == 'SUBJECT') {
+					_this2._state = _extends({}, _this2.state, { scheduledSubjects: _this2._state.scheduledSubjects.map(function (ss) {
+							if (ss.subject.id == data.id) {
+								var newSS = _extends({}, ss);
+								if (!newSS.subject._clicked) {
+									newSS.subject._clicked = true;
+									newSS.subject._backgroundColor = 'linear-gradient(0deg, hsl(' + color + ', 20%, 60%), hsl(' + color + ', 20%, 75%))';
+								} else {
+									delete newSS.subject._clicked;
+									delete newSS.subject._backgroundColor;
+								}
+								return newSS;
+							}
+							return ss;
+						}) });
+				}
+				_this2.emit(type);
+				break;
+		}
+	};
 
-			this.loadSchedule = function (schedule) {
-						_this2.schedule = schedule;
-						_this2.emit('SCHEDULE');
-			};
+	this.onFilter = function (scheduledSubjects) {
+		_this2._state = _extends({}, _this2._state, { scheduledSubjects: scheduledSubjects });
+		_this2.emit('ON_FILTER');
+	};
+
+	this.onItemClick = function (type, id) {
+		_this2._state = _extends({}, _this2._state, {
+			scheduledSubjects: _this2._state.scheduledSubjects.map(function (ss) {
+				if (ss[type] && ss[type].id == id) {
+					if (!ss[type]._clicked) {
+						ss[type] = _extends({}, ss[type], { _clicked: true });
+					} else {
+						delete item._clicked;
+					}
+				}
+				return ss;
+			})
+		});
+		_this2.emit('ON_ITEM_CLICK');
+	};
 };
 
 exports.default = ScheduleStore;
