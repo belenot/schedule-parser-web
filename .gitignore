@@ -1,7 +1,9 @@
 /*
 *~
-bundle.*
 /src/react/node_modules
 !/src
 !/pom.xml
 !/.gitignore
+src/main/webapp/resources/js/bundle.js
+src/main/webapp/resources/js/bundle.js
+bundle.*

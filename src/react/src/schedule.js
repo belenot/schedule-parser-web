@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM  from 'react-dom'
 
 import Schedule from './component/Schedule'
-import ControlPanel from './component/ControlPanel'
+import { StyledControlPanel } from './component/styles/StyledControlPanel'
 
 
 import AppDispatcher from './AppDispatcher'
@@ -27,7 +27,7 @@ var renderSchedule = (data) => {
 
 var renderControlPanel = (data) => {
     ReactDOM.render(
-	<ControlPanel {...{...data, ...actions}} />,
+	<StyledControlPanel {...{...data, ...actions}} />,
 	document.querySelector('#control-panel')
     )
 }
