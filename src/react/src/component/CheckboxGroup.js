@@ -5,7 +5,7 @@ export const CheckboxGroup = ({className, options, display, name, handleCheck=f=
         {options.map( option => 
             <label key={option}>
                 {display(option)}
-                <input type="checkbox" name={name} value={option} />
+                <input type="checkbox" name={name} value={option} onChange={e=>handleCheck(e.target.value, false, e.target.checked)}/>
                 <span></span>
             </label>
         )}

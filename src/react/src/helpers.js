@@ -13,3 +13,30 @@ export const displayedLessonType = {
     'PRACTICE': 'Практика',
     'LAB': 'Лаб.работа'
 }
+
+export const filterState = () => ({
+    studentGroupsIds: [],
+    teachersIds: [],
+    subjectsIds: [],
+    classroomsIds: [],
+    lessonTypes: [],
+    lessonTimes: [],
+    dateIntervals: []
+})
+
+export const curDateInterval = () => {
+    let date = moment().format('YYYY-MM-DD');
+    return {
+        value: {
+            firstValue: date,
+            lastValue: date
+        }, 
+        excluded: false
+    }
+}
+export const selectionsMap = {
+    studentGroupsIds: 'studentGroups', 
+    teachersIds: 'teachers', 
+    subjectsIds: 'subjects', 
+    classroomsIds:'classrooms'
+};

@@ -106,7 +106,7 @@ class ControlPanelStore extends EventEmitter {
 		switch (data.status) {
 		    case 'OK':
 			if (data.status == 'OK')
-			    this.api.scheduledSubject(this._state.filter)
+			    this.api.scheduledSubject(data.filter)
 			break;
 		    case 'STUDENT_GROUPS':
 			this._state.filter.studentGroupsIds = data.data.elements

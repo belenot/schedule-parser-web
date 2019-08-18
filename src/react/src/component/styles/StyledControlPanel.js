@@ -40,4 +40,9 @@ export const StyledControlPanel = styled(ControlPanel)`
         display: flex;
         justify-content: space-around;
     }
+    .date-intervals{
+        max-height: 200px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
 `

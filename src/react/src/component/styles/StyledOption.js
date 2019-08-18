@@ -5,7 +5,7 @@ export const StyledOption = styled(Option)`
     width: 90%;
     display: flex;
     justify-content: space-between;
-    background-color: hsl(220, 50%, 95%);
+    background-color: ${props => !props._checked?"hsl(220, 50%, 95%)":!props._excluded?"lightgreen":"lightpink"};
     border: 1px solid gray;
     padding: 5px;
     margin: 10px;
