@@ -3,11 +3,14 @@ import ControlPanel from '../ControlPanel';
 
 export const StyledControlPanel = styled(ControlPanel)`
     width: 20%;
-    background-color: inherit;
+    background-color: white;
     border: 4px groove silver;
     border-radius: 10px 10px 10px 10px;
     box-shadow: inset 0 0 10px gray;
     padding: 20px;
+    position: fixed;
+    transform: translate(${props => props.hidden ? '-30vw' : '0'}, 0);
+    transition: .5s;
 
     *{
         outline: none;
@@ -15,7 +18,7 @@ export const StyledControlPanel = styled(ControlPanel)`
     *::-webkit-scrollbar {
         width: 2px;
         height: 2px;
-        background-color: lightcoral;
+        background-color: lightsteelblue;
     }
     *::-webkit-scrollbar-thumb {
         background-color: black;
@@ -35,6 +38,19 @@ export const StyledControlPanel = styled(ControlPanel)`
         font: 12pt black;
         font-family: Arial, Helvetica, sans-serif;
         font-weight: bold;
+    }
+    .hide-btn {
+        transition: .5s;
+        transform: translate(${props => props.hidden ? '25vw' : '0'}, 0);
+        border-radius: ${props => props.hidden?'0 20px 20px 0' : '20px 0 0 20px'};
+        width: 4em;
+        height: 1em;
+        background: black;
+        color: white;
+        border-bottom: lightsteelblue;
+        :hover {
+            background: repeating-linear-gradient(-45deg, darkorange, darkorange 1px, white 1px, white 5px);
+        }
     }
     .checkbox-groups {
         display: flex;

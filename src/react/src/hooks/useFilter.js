@@ -4,10 +4,12 @@ import moment from 'moment'
 
 
 export const useFilter = (initFilter, initSelections) => {
+    initSelections = Object.keys(initSelections).filter( p => initSelections[p].length > 0).reduce( (ac, el) => ({...ac, [el]: initSelections[el]}), {});
     const [filter, setFilter] = useState(initFilter || filterState);
-    const [selections, setSelections] = useState(initSelections || {});
-    useEffect( () => setSelections({...selections, ...initSelections}), 
-    [initSelections.studentGroups, initSelections.teachers, initSelections.subjects, initSelections.classrooms])
+    const [selections, setSelections] = useState({studentGroups: [], teachers: [], subjects: [], classrooms: []});
+    let filledSelections = {...selections, ...initSelections};
+    useEffect( () => setSelections(filledSelections), 
+    [filledSelections.studentGroups.length, filledSelections.teachers.length, filledSelections.subjects.length, filledSelections.classrooms.length]);
     
     const handleFilter = (type, info, data) => {
         const {dest, index} = info;

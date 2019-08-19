@@ -40,3 +40,7 @@ export const selectionsMap = {
     subjectsIds: 'subjects', 
     classroomsIds:'classrooms'
 };
+export const randomColor = () => {
+    let randomHue = Math.ceil(Math.random() * 360);
+    return `hsl(${randomHue}, 50%, 70%)`
+}

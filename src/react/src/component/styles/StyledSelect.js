@@ -12,6 +12,11 @@ export const StyledSelect = styled(Select)`
         box-sizing: border-box;
         margin-top: 10px;
     }
+    .selected-items {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 15px;
+    }
 
 
 `
