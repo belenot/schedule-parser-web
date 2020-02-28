@@ -8,7 +8,7 @@
   <name>schedule-parser-web</name>
   <url>http://maven.apache.org</url>
   <properties>
-    <tomcat.version>8.5.40</tomcat.version>
+    <tomcat.version>8.5.51</tomcat.version>
     <mainClass>com.belenot.mirea.schedule.boot.TomcatBoot</mainClass>
   </properties>
   <dependencies>
